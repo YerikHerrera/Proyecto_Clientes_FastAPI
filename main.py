@@ -24,7 +24,7 @@ async def listar_cliente(cliente_id: int):
     for i, obj_cliente in enumerate(lista_clientes):
         if obj_cliente.id == cliente_id:
             return obj_cliente
-        raise HTTPException(
+    raise HTTPException(
             status_code=400, detail=f"La cliente con id {cliente_id}, no existe."
         )
 
@@ -50,7 +50,7 @@ async def editar_cliente(cliente_id: int, datos_cliente: ClienteEditar):
             cliente_val.id = cliente_id
             lista_clientes[i] = cliente_val
             return cliente_val
-        raise HTTPException(
+    raise HTTPException(
             status_code=400, detail=f"El cliente con id {cliente_id}, no existe."
         )
     
@@ -62,7 +62,7 @@ async def eliminar_cliente(cliente_id: int):
         if obj_cliente.id == cliente_id:
             cliente_eliminado = lista_clientes.pop(i)
             return cliente_eliminado
-        raise HTTPException(
+    raise HTTPException(
             status_code=400, detail=f"El cliente con id {cliente_id}, no existe."
         )
     
@@ -76,13 +76,13 @@ async def listar_facturas():
     return lista_facturas
 
 
-@app.get("/facturas/{id_factura}", response_model=Factura)
+@app.get("/facturas/{factura_id}", response_model=Factura)
 async def listar_factura(factura_id: int):
     #Recorrer la lista facturas
     for i, obj_factura in enumerate(lista_facturas):
         if obj_factura.id == factura_id:
             return obj_factura
-        raise HTTPException(
+    raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail=f"La factura con id {factura_id}, no existe."
         )

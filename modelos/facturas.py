@@ -1,12 +1,11 @@
-from pydantic import BaseModel
-from 
+from pydantic import BaseModel, computed_field
 from .clientes import Cliente
+from .transacciones import Transaccion
 from datetime import datetime
 
 #Crear el modelo transacciones(id, fecha, vr_total, cliente)
 class FacturaBase(BaseModel):
     fecha: str = datetime.now()
-    vr_total: float
     cliente: Cliente
     transacciones: list[Transaccion] = []
     
@@ -36,5 +35,5 @@ class FacturaEditar(FacturaBase):
     pass
 
 
-class Factura(FacturaBase)
+class Factura(FacturaBase):
     id: int | None = None

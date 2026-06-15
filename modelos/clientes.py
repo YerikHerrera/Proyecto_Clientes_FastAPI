@@ -17,3 +17,4 @@ class ClienteEditar(ClienteBase):
 
 class Cliente(ClienteBase):
     id: int | None = None
+    
