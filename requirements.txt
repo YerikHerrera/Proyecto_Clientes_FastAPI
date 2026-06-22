@@ -1,2 +1,2 @@
-fastapi[standard]>=0.137.1
+fastapi[standard]>=0.138.0
 sqlmodel>=0.0.38
