@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException, status
 from ..modelos.facturas import Factura, FacturaCrear, FacturaEditar
 from ..modelos.clientes import Cliente
 from ..listas import lista_facturas, lista_clientes
+from ..conexion_bd import Sesion_dependencia
+from sqlmodel import select
 
 rutas_facturas = APIRouter()
 
@@ -10,7 +12,10 @@ rutas_facturas = APIRouter()
 
 
 @rutas_facturas.get("/facturas", response_model=list[Factura])
-async def listar_facturas():
+async def listar_facturas(sesion: Sesion_dependencia):
+    # Select * from Factura
+    consulta = select(Factura)
+    lista_facturas = sesion.exec(consulta).all()
     return lista_facturas
 
 
@@ -27,24 +32,36 @@ async def listar_factura(factura_id: int):
 
 
 @rutas_facturas.post("/facturas/{cliente_id}", response_model=Factura)
-async def crear_factura(cliente_id: int, datos_factura: FacturaCrear):
-    #Buscar el cliente
-    cliente_encontrado = None
-    for cliente in lista_clientes:
-        if cliente.id == cliente_id:
-            cliente_encontrado = cliente
-    #Mensaje si no existe el cliente
+async def crear_factura(
+    cliente_id: int, datos_factura: FacturaCrear, sesion: Sesion_dependencia
+    ):
+    # Buscar el cliente en bd
+
+    cliente_encontrado = sesion.get(Cliente, cliente_id)
+    # Mensaje si no existe el cliente
     if not cliente_encontrado:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail=f"El cliente con id {cliente_id}, no existe."
         )
 
-    #Validar datos de la factura
-    factura_val = Factura.model_validate(datos_factura.model_dump())
-    factura_val.cliente = cliente_encontrado
-    #Id de la factura
-    factura_val.id = len(lista_facturas)+1
-    lista_facturas.append(factura_val)
+    #Validar datos de la factura-json, pasar dict
+    factura_dict = datos_factura.model_dump()
+    factura_dict["cliente_id"] = cliente_id
+    factura_val = Factura.model_validate(factura_dict)
+
+    # Guardar en bd
+    sesion.add(factura_val)
+    sesion.commit()
+    sesion.refresh(factura_val)
     return factura_val
 
+
+@rutas_facturas.patch("/facturas/{id_factura}", response_model=Factura)
+async def editar_factura(id_factura: int, datos_factura: Factura):
+    pass
+
+
+@rutas_facturas.delete("/facturas/{id_factura}", response_model=Factura)
+async def eliminar_factura(id_factura):
+    pass
