@@ -1,0 +1,5 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/.ent_vir/Scripts/python.exe",
+    "python.analysis.extraPaths": ["./app"],
+    "python.autoComplete.extraPaths": ["./app"]
+}
