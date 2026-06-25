@@ -1,6 +1,6 @@
 from pydantic import BaseModel, computed_field
 from sqlmodel import SQLModel, Field, Relationship
-from .clientes import Cliente
+from .clientes import Cliente, ClienteLeer
 from .transacciones import Transaccion
 from datetime import datetime
 
@@ -43,4 +43,10 @@ class FacturaEditar(FacturaBase):
 class Factura(FacturaBase, table = True):
     id: int | None = Field(default=None, primary_key = True)
     cliente_id: int = Field(default=None, foreign_key = "cliente.id")
-    
+    #Crear relaciones virtuales con cliente - NO en la BD
+    cliente : Cliente = Relationship(back_populates="facturas")
+
+#Crear modelo para mostrar al usuario o el cliente
+class FacturaLeer(FacturaBase):
+    id: int
+    cliente: ClienteLeer
